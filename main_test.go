@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// TestCafeNegative checks invalid /cafe requests and error responses
 func TestCafeNegative(t *testing.T) {
 	handler := http.HandlerFunc(mainHandle)
 
@@ -22,15 +23,16 @@ func TestCafeNegative(t *testing.T) {
 		{"/cafe?city=tula&count=na", http.StatusBadRequest, "incorrect count"},
 	}
 	for _, v := range requests {
-		response := httptest.NewRecorder()
-		req := httptest.NewRequest("GET", v.request, nil)
-		handler.ServeHTTP(response, req)
+		response := httptest.NewRecorder()                // Create mock response recorder
+		req := httptest.NewRequest("GET", v.request, nil) // Create mock request
+		handler.ServeHTTP(response, req)                  // Execute handler
 
-		assert.Equal(t, v.status, response.Code)
-		assert.Equal(t, v.message, strings.TrimSpace(response.Body.String()))
+		assert.Equal(t, v.status, response.Code)                              // Check HTTP status
+		assert.Equal(t, v.message, strings.TrimSpace(response.Body.String())) // Check error message
 	}
 }
 
+// TestCafeWhenOk checks valid /cafe requests and success responses
 func TestCafeWhenOk(t *testing.T) {
 	handler := http.HandlerFunc(mainHandle)
 
@@ -40,11 +42,10 @@ func TestCafeWhenOk(t *testing.T) {
 		"/cafe?city=moscow&search=ложка",
 	}
 	for _, v := range requests {
-		response := httptest.NewRecorder()
-		req := httptest.NewRequest("GET", v, nil)
+		response := httptest.NewRecorder()        // Create mock response recorder
+		req := httptest.NewRequest("GET", v, nil) // Create mock request
+		handler.ServeHTTP(response, req)          // Execute handler
 
-		handler.ServeHTTP(response, req)
-
-		assert.Equal(t, http.StatusOK, response.Code)
+		assert.Equal(t, http.StatusOK, response.Code) // Verify success status
 	}
 }
